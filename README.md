@@ -14,8 +14,7 @@
 ​		进入拉勾网职位搜索页面，输入 **数据分析** 关键字跳转到结果页面，默认显示全国的搜索结果：发现最多显示30页，每页15条职位信息。这种情况显然不符合我们的要求，为了获取全国的职位信息，需要以城市为单位往下搜索；如果城市结果仍然有30页，则继续往下钻按行政区划搜索。
 
 ​		打开 Chrome 浏览器开发者工具，切换到 **Network** 页面，持续点击搜索结果“下一页”，查看网络数据的交互情况，可以在 **XHR** 选项卡发现真正的数据加载请求：
-
-![图一](E:\MyWork\documents\知识分享\20190627-拉勾\imgs\请求结果.png)
+<div align=center><img src="https://raw.githubusercontent.com/beckleon/Lagou_spider/master/imgs/请求结果.png"/></div>
 
 ## 尝试抓取：
 
@@ -88,8 +87,7 @@ print(r.json())
 的确拿到了 JSON 格式的结果。但是使用这个方法尝试抓取几页之后，依然会得到"您操作太频繁,请稍后再访问"的结果，在尝试使用代理 IP 以及抓取间隔控制等多种方法后，仍然是这样。问题到底出在哪里？为什么还是会被反爬？
 
 通过对网络交互数据的仔细追踪，不难发现每次向 API 发送 POST 请求之后，网站会自动发送一条 GET 请求：
-
-![GET请求](E:\MyWork\documents\知识分享\20190627-拉勾\imgs\GET请求.png)
+<div align=center><img src="https://raw.githubusercontent.com/beckleon/Lagou_spider/master/imgs/GET请求.png"/></div>
 
 这条请求并没有什么实质性的作用，所带参数只不过是上一条 POST 请求拿回来结果的公司 ID，故猜想这个 GET 请求是用来确认或者更新 Cookies 的，那么为了确保 Cookies 持续有效，我们只需在每次发送 POST 请求之前，使用 GET 请求刷新 Cookies 即可。为了验证想法，尝试使用下面的代码抓取北京30页的结果：
 
@@ -150,8 +148,7 @@ if __name__ == '__main__':
 ## 数据清洗：
 
 在2019年7月2日这一天我们抓取了全国45个城市共1997条招聘数据。抓回来的原始数据保存在本地 MongoDB 中，我们需要对其进行清洗并提取出有用的字段之后才能使用。可能感兴趣的字段如下所示：
-
-![数据清洗](E:\MyWork\documents\知识分享\20190627-拉勾\imgs\数据清洗.png)
+<div align=center><img src="https://raw.githubusercontent.com/beckleon/Lagou_spider/master/imgs/数据清洗.png"/></div>
 
 1. **去重**：以 ***positionId*** 字段对岗位进行去重，因为可能有些发布者会发布一些置顶的急招广告，在每个结果页都展示。
 2. **变更格式**：探索发现工作经验 ***workyear*** 、公司规模 ***companySize***  这两个字段的内容都是互不相交的区间，可以进行分类；而工资 ***salary*** 字段不是，需要把这个字段的内容拆开来，分别为最低、最高工资，顺便计算出平均值 ***average_salary***。
@@ -172,29 +169,29 @@ if __name__ == '__main__':
 
 ### 1、从职位维度：
 
-![tableau-职位维度](E:\MyWork\documents\知识分享\20190627-拉勾\imgs\tableau-职位维度.png)
+<div align=center><img src="https://raw.githubusercontent.com/beckleon/Lagou_spider/master/imgs/tableau-职位维度.png"/></div>
 
 可以看到全职工作占据了95.6%的比重，其次是实习职位。从职位的城市分布来看，沿海城市占据了绝对多数，其中北上深广四大一线城市遥遥领先。在此强烈推荐参加高考的考生尽量报考沿海以及一线城市的高校，将来无论实习还是工作机会都大很多。从城市的平均工资来看，北京仍遥遥领先，其次是深圳、杭州、上海，反观广州却跌到了第十。
 
 ### 2、从公司来看：
 
-![tableau-公司职位数](E:\MyWork\documents\知识分享\20190627-拉勾\imgs\tableau-公司职位数.png)
+<div align=center><img src="https://raw.githubusercontent.com/beckleon/Lagou_spider/master/imgs/tableau-公司职位数.png"/></div>
 
 “字节跳动”公司招聘的数据分析类职位是最多的，其次是百融云创、京东以及腾讯这一类的大公司。
 
-![tableau-公司规模财务](E:\MyWork\documents\知识分享\20190627-拉勾\imgs\tableau-公司规模财务.png)
+<div align=center><img src="https://raw.githubusercontent.com/beckleon/Lagou_spider/master/imgs/tableau-公司规模财务.png"/></div>
 
 需要数据分析类人才的公司基本都是上一定规模的公司，而小公司、初创公司不太需要。
 
 ### 3、从对求职者的要求来看：
 
-![tableau-求职者](E:\MyWork\documents\知识分享\20190627-拉勾\imgs\tableau-求职者.png)
+<div align=center><img src="https://raw.githubusercontent.com/beckleon/Lagou_spider/master/imgs/tableau-求职者.png"/></div>
 
 大部分职位要求本科学历以上，而且对有3~5年工作经验的求职者比较青睐。
 
 ### 4、词云展示：
 
-![tableau-词云](E:\MyWork\documents\知识分享\20190627-拉勾\imgs\tableau-词云.png)
+<div align=center><img src="https://raw.githubusercontent.com/beckleon/Lagou_spider/master/imgs/tableau-词云.png"/></div>
 
 当然还有更多可以分析的维度，有待读者的发掘。
 
